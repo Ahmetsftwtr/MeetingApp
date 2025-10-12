@@ -42,7 +42,7 @@ services:
 
   meetingapp-api:
     build:
-      context: .
+      context: ./Backend
       dockerfile: Dockerfile
     container_name: meetingapp-api
     environment:
@@ -60,7 +60,7 @@ services:
       - EmailSettings__SenderName=MeetingApp
       - EmailSettings__Username=test@gmail.com
       - EmailSettings__Password=test-app-password
-      - AppSettings__BaseUrl=http://localhost:8080
+      - AppSettings__BaseUrl=http://localhost:4200
     ports:
       - "8080:80"
     depends_on:
@@ -70,6 +70,20 @@ services:
         condition: service_healthy
     volumes:
       - meetingapp-uploads:/app/MeetingDocuments
+      - meetingapp-api-wwwroot:/app/wwwroot
+    networks:
+      - meetingapp-network
+    restart: unless-stopped
+
+  meetingapp-frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: meetingapp-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - meetingapp-api
     networks:
       - meetingapp-network
     restart: unless-stopped
@@ -78,6 +92,7 @@ volumes:
   sqlserver-data:
   rabbitmq-data:
   meetingapp-uploads:
+  meetingapp-api-wwwroot:
 
 networks:
   meetingapp-network:
