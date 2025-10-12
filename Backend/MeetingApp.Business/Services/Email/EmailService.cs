@@ -34,7 +34,33 @@ namespace MeetingApp.Business.Services.Email
             };
 
             _bus.Send(emailMessage);
-            Console.WriteLine($"📨 Email kuyruğa eklendi: {toEmail}");
+            Console.WriteLine($"Email kuyruğa eklendi: {toEmail}");
+        }
+
+        public void QueueMeetingCreatedEmail(string toEmail, string userName, Guid meetingId, string meetingTitle, DateTime startDate, DateTime endDate, string description)
+        {
+            var emailMessage = new EmailMessage
+            {
+                ToEmail = toEmail,
+                Subject = $"Yeni Toplantı: {meetingTitle}",
+                TemplateName = "MeetingCreated",
+                TemplateData = new Dictionary<string, string>
+                {
+                    { "UserName", userName },
+                    { "MeetingId", meetingId.ToString() },
+                    { "MeetingTitle", meetingTitle },
+                    { "StartDate", startDate.ToString("dd MMMM yyyy HH:mm") },
+                    { "EndDate", endDate.ToString("dd MMMM yyyy HH:mm") },
+                    { "Description", description },
+                    { "AppUrl", _appUrl },
+                    { "CurrentYear", DateTime.Now.Year.ToString() }
+                }
+            };
+
+            _bus.Send(emailMessage);
+            Console.WriteLine($"Toplantı bilgilendirme emaili kuyruğa eklendi: {toEmail}");
         }
     }
+
+
 }

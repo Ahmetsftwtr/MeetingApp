@@ -1,0 +1,46 @@
+﻿<div style="text-align: center; margin-bottom: 30px;">
+    <div style="width: 80px; height: 80px; background-color: #FF5F00; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+        <span style="color: white; font-size: 40px; padding: 5px 0px 0px 15px;">📅</span>
+    </div>
+</div>
+
+<h2 style="color: #333; margin: 0 0 20px 0; font-size: 28px; text-align: center;">
+    Yeni Toplantı Oluşturuldu
+</h2>
+
+<p style="color: #555; line-height: 1.8; font-size: 16px; margin: 0 0 15px 0;">
+    Merhaba <strong>{{UserName}}</strong>,
+</p>
+
+<p style="color: #555; line-height: 1.8; font-size: 16px; margin: 0 0 25px 0;">
+    Yeni bir toplantı oluşturuldu. Aşağıda toplantı detaylarını bulabilirsiniz:
+</p>
+
+<div style="background-color: #f9f9f9; padding: 25px; border-radius: 8px; border-left: 4px solid #FF5F00; margin-bottom: 25px;">
+    <h3 style="color: #FF5F00; margin: 0 0 15px 0; font-size: 20px;">
+        {{MeetingTitle}}
+    </h3>
+
+    <p style="margin: 10px 0; color: #666; font-size: 15px;">
+        📅 <strong>Başlangıç:</strong> {{StartDate}}
+    </p>
+
+    <p style="margin: 10px 0; color: #666; font-size: 15px;">
+        ⏰ <strong>Bitiş:</strong> {{EndDate}}
+    </p>
+
+    <p style="margin: 15px 0 0 0; color: #555; font-size: 15px; line-height: 1.6;">
+        <strong>Açıklama:</strong><br>
+        {{Description}}
+    </p>
+</div>
+
+<div style="text-align: center; margin: 40px 0 30px 0;">
+    <a href="{{AppUrl}}/meetings/{{MeetingId}}" style="display: inline-block; background-color: #FF5F00; color: white; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(255, 95, 0, 0.3);">
+        Toplantıyı Görüntüle →
+    </a>
+</div>
+
+<p style="color: #999; font-size: 13px; margin: 30px 0 0 0; text-align: center; line-height: 1.6;">
+    Toplantı hakkında daha fazla bilgi için uygulamaya giriş yapabilirsiniz.
+</p>

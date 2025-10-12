@@ -10,5 +10,6 @@ namespace MeetingApp.DataAccess.Repositories.Abstractions
     {
         IQueryable<User> GetAllQueryable();
         Task<User?> GetByEmailAsync(string email);
+        Task<User?> GetUserByIdAsync(Guid userId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using MeetingApp.Business.Abstractions.Meeting;
+﻿using MeetingApp.Business.Abstractions.Email;
+using MeetingApp.Business.Abstractions.Meeting;
 using MeetingApp.Business.Mappings;
 using MeetingApp.DataAccess.Repositories.UnitOfWork;
 using MeetingApp.Models.DTOs.Meeting;
@@ -15,12 +16,14 @@ namespace MeetingApp.Business.Services.Meeting
     public class MeetingService : IMeetingService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
         private readonly string _baseUrl;
 
-        public MeetingService(IUnitOfWork unitOfWork, IConfiguration configuration)
+        public MeetingService(IUnitOfWork unitOfWork, IConfiguration configuration, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _baseUrl = configuration["AppSettings:BaseUrl"] ?? "https://localhost:5001";
+            _emailService = emailService;
         }
 
         public async Task<IResult> CreateMeetingAsync(Guid userId, CreateMeetingDto dto)
@@ -44,6 +47,18 @@ namespace MeetingApp.Business.Services.Meeting
 
                 var createdMeeting = await _unitOfWork.Meetings.GetByIdWithDetailsAsync(meeting.Id);
                 var resultDto = MeetingMapper.ToDto(createdMeeting!, _baseUrl);
+
+                var user = await _unitOfWork.Users.GetUserByIdAsync(userId);
+
+                _emailService.QueueMeetingCreatedEmail(
+                    user.Email,
+                    $"{user.FirstName} {user.LastName}",
+                    meeting.Id,
+                    meeting.Title,
+                    meeting.StartDate,
+                    meeting.EndDate,
+                    meeting.Description ?? string.Empty
+                );
 
                 return new SuccessDataResult<MeetingDto>(resultDto, "Toplantı başarıyla oluşturuldu.");
             }

@@ -17,9 +17,16 @@ namespace MeetingApp.DataAccess.Repositories.Implementations
             return await _dbSet.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
         }
 
+        public async Task<User?> GetUserByIdAsync(Guid userId)
+        {
+            return await _dbSet.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
         public IQueryable<User> GetAllQueryable()
         {
             return _dbSet.AsQueryable();
         }
+
+ 
     }
 }
