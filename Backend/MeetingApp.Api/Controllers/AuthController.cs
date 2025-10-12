@@ -1,17 +1,16 @@
 using MeetingApp.Api.Filters;
 using MeetingApp.Business.Abstractions.User;
 using MeetingApp.Models.DTOs.User;
-using MeetingApp.Models.ReturnTypes.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace MeetingApp.Api.Controllers
 {
-    public class UsersController : BaseApiController
+    public class AuthController : BaseApiController
     {
         private readonly IUserService _userService;
 
-        public UsersController(IUserService userService)
+        public AuthController(IUserService userService)
         {
             _userService = userService;
         }
@@ -36,9 +35,9 @@ namespace MeetingApp.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("profile")]
+        [HttpGet("me")]
         [JwtAuthorize]
-        public async Task<IActionResult> GetProfile()
+        public async Task<IActionResult> GetMyProfile()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
@@ -50,7 +49,5 @@ namespace MeetingApp.Api.Controllers
 
             return Ok(result);
         }
-
-
     }
 }

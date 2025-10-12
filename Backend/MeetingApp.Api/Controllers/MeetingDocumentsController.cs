@@ -28,8 +28,8 @@ namespace MeetingApp.Api.Controllers
             return userId;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UploadDocument(Guid meetingId, IFormFile file)
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload(Guid meetingId, IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest(new { success = false, message = "Dosya seçilmedi." });
@@ -59,8 +59,8 @@ namespace MeetingApp.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetDocuments(Guid meetingId)
+        [HttpGet("list")]
+        public async Task<IActionResult> GetList(Guid meetingId)
         {
             var userId = GetCurrentUserId();
             var result = await _documentService.GetDocumentsByMeetingIdAsync(meetingId, userId);
@@ -71,9 +71,8 @@ namespace MeetingApp.Api.Controllers
             return Ok(result);
         }
 
-
-        [HttpGet("{documentId:guid}/download")]
-        public async Task<IActionResult> DownloadDocument(Guid meetingId, Guid documentId)
+        [HttpGet("{documentId}/download")]
+        public async Task<IActionResult> Download(Guid meetingId, Guid documentId)
         {
             var userId = GetCurrentUserId();
             var result = await _documentService.DownloadDocumentAsync(documentId, userId);
@@ -85,9 +84,8 @@ namespace MeetingApp.Api.Controllers
             return File(data.Item1, data.Item2, data.Item3);
         }
 
-
-        [HttpDelete("{documentId:guid}")]
-        public async Task<IActionResult> DeleteDocument(Guid meetingId, Guid documentId)
+        [HttpDelete("{documentId}")]
+        public async Task<IActionResult> Delete(Guid meetingId, Guid documentId)
         {
             var userId = GetCurrentUserId();
             var result = await _documentService.DeleteDocumentAsync(documentId, userId);

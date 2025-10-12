@@ -90,6 +90,23 @@ try
 
     var app = builder.Build();
 
+    using (var scope = app.Services.CreateScope())
+    {
+        try
+        {
+            Console.WriteLine("Running database migrations...");
+            var db = scope.ServiceProvider.GetRequiredService<MeetingAppDbContext>();
+            db.Database.Migrate();
+            Console.WriteLine("Database migration completed successfully!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Database migration failed: {ex.Message}");
+            Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+            throw;
+        }
+    }
+
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -115,13 +132,13 @@ try
 
     app.MapControllers();
 
-    Console.WriteLine("✅ MeetingApp API started successfully");
+    Console.WriteLine("MeetingApp API started successfully");
 
     app.Run();
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"❌ FATAL ERROR: {ex.Message}");
+    Console.WriteLine($"FATAL ERROR: {ex.Message}");
     throw;
 }
 

@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: meetingapp-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Octapull123
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - meetingapp-network
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Octapull123 -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: meetingapp-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - meetingapp-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  meetingapp-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: meetingapp-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MeetingAppDb;User Id=sa;Password=Octapull123;TrustServerCertificate=True;MultipleActiveResultSets=True;
+      - MessageBroker=amqp://guest:guest@rabbitmq:5672
+      - Jwt__Secret=your-super-secret-jwt-key-must-be-at-least-32-characters-long!
+      - Jwt__Issuer=MeetingApp
+      - Jwt__Audience=MeetingAppUsers
+      - Jwt__ExpiryMinutes=60
+      - EmailSettings__SmtpHost=smtp.gmail.com
+      - EmailSettings__SmtpPort=587
+      - EmailSettings__SenderEmail=noreply@meetingapp.com
+      - EmailSettings__SenderName=MeetingApp
+      - EmailSettings__Username=test@gmail.com
+      - EmailSettings__Password=test-app-password
+      - AppSettings__BaseUrl=http://localhost:8080
+    ports:
+      - "8080:80"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - meetingapp-uploads:/app/MeetingDocuments
+    networks:
+      - meetingapp-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:
+  rabbitmq-data:
+  meetingapp-uploads:
+
+networks:
+  meetingapp-network:
+    driver: bridge
