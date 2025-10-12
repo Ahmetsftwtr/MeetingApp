@@ -1,0 +1,99 @@
+<div class="meeting-form-container">
+  <div class="form-card">
+    <h1>Toplantıyı Düzenle</h1>
+
+    @if (errorMessage()) {
+      <div class="error-message">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="loading-overlay">
+        <div class="spinner-large"></div>
+        <p>Yükleniyor...</p>
+      </div>
+    } @else {
+      <form [formGroup]="meetingForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="title">Toplantı Başlığı *</label>
+          <input
+            type="text"
+            id="title"
+            formControlName="title"
+            placeholder="Toplantı başlığını girin"
+          >
+          @if (title?.invalid && title?.touched) {
+            <span class="error-text">
+              @if (title?.errors?.['required']) {
+                Toplantı başlığı zorunludur
+              } @else if (title?.errors?.['minlength']) {
+                Başlık en az 3 karakter olmalıdır
+              }
+            </span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="description">Açıklama</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="4"
+            placeholder="Toplantı açıklamasını girin"
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">Başlangıç Tarihi *</label>
+            <input
+              type="datetime-local"
+              id="startDate"
+              formControlName="startDate"
+            >
+            @if (startDate?.invalid && startDate?.touched) {
+              <span class="error-text">Başlangıç tarihi zorunludur</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="endDate">Bitiş Tarihi *</label>
+            <input
+              type="datetime-local"
+              id="endDate"
+              formControlName="endDate"
+            >
+            @if (endDate?.invalid && endDate?.touched) {
+              <span class="error-text">Bitiş tarihi zorunludur</span>
+            }
+          </div>
+        </div>
+
+        @if (meetingForm.errors?.['dateRange'] && meetingForm.touched) {
+          <div class="error-message">
+            Bitiş tarihi başlangıç tarihinden sonra olmalıdır
+          </div>
+        }
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" routerLink="/meetings/{{ meetingId }}">
+            İptal
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="loading() || meetingForm.invalid"
+          >
+            @if (loading()) {
+              <span class="spinner"></span>
+              Güncelleniyor...
+            } @else {
+              Güncelle
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

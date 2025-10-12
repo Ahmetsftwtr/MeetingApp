@@ -1,0 +1,19 @@
+.card {
+  background: $white;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  padding: $spacing-3;
+  
+  @include hover-lift;
+  
+  &-title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-2;
+    color: $gray-900;
+  }
+  
+  &-body {
+    color: $gray-700;
+  }
+}

@@ -1,0 +1,26 @@
+h1, h2, h3, h4, h5, h6 {
+  font-weight: $font-weight-bold;
+  line-height: 1.2;
+  margin-bottom: $spacing-2;
+}
+
+h1 { font-size: 32px; }
+h2 { font-size: 28px; }
+h3 { font-size: 24px; }
+h4 { font-size: 20px; }
+h5 { font-size: 18px; }
+h6 { font-size: 16px; }
+
+p {
+  margin-bottom: $spacing-2;
+}
+
+.text-center { text-align: center; }
+.text-muted { color: $gray-600; }
+.text-primary { color: $primary; }
+.text-success { color: $success; }
+.text-danger { color: $danger; }
+
+.fw-normal { font-weight: $font-weight-normal; }
+.fw-medium { font-weight: $font-weight-medium; }
+.fw-bold { font-weight: $font-weight-bold; }

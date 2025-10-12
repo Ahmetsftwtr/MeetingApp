@@ -1,0 +1,181 @@
+<div class="detail-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner-large"></div>
+      <p>Yükleniyor...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="error-state">
+      <p>{{ errorMessage() }}</p>
+      <button class="btn btn-primary" routerLink="/meetings">Toplantılara Dön</button>
+    </div>
+  } @else if (meeting()) {
+    <div class="detail-header">
+      <div class="header-content">
+        <h1>{{ meeting()!.title }}</h1>
+        <span class="badge" [class]="getStatusClass(meeting()!)">
+          <app-icon [name]="getStatusIcon(meeting()!)" [size]="16" />
+          {{ getStatusText(meeting()!) }}
+        </span>
+      </div>
+      <div class="header-actions">
+        @if (!meeting()!.isCancelled) {
+          <button class="btn btn-secondary" (click)="editMeeting()">
+            <app-icon name="edit" [size]="18" />
+            Düzenle
+          </button>
+          <button class="btn btn-danger" (click)="cancelMeeting()">
+            <app-icon name="close" [size]="18" />
+            İptal Et
+          </button>
+        }
+        <button class="btn btn-danger" (click)="deleteMeeting()">
+          <app-icon name="trash" [size]="18" />
+          Sil
+        </button>
+      </div>
+    </div>
+
+    <div class="detail-content">
+      <div class="info-section">
+        <h3>
+          <app-icon name="info" [size]="20" />
+          Toplantı Bilgileri
+        </h3>
+        
+        @if (meeting()!.description) {
+          <div class="info-item">
+            <span class="label">Açıklama:</span>
+            <span class="value">{{ meeting()!.description }}</span>
+          </div>
+        }
+        
+        <div class="info-item">
+          <span class="label">
+            <app-icon name="calendar" [size]="16" />
+            Başlangıç:
+          </span>
+          <span class="value">{{ formatDate(meeting()!.startDate) }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="label">
+            <app-icon name="calendar" [size]="16" />
+            Bitiş:
+          </span>
+          <span class="value">{{ formatDate(meeting()!.endDate) }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="label">
+            <app-icon name="clock" [size]="16" />
+            Oluşturulma:
+          </span>
+          <span class="value">{{ formatDate(meeting()!.createdAt) }}</span>
+        </div>
+        
+        @if (meeting()!.updatedAt) {
+          <div class="info-item">
+            <span class="label">
+              <app-icon name="clock" [size]="16" />
+              Son Güncelleme:
+            </span>
+            <span class="value">{{ formatDate(meeting()!.updatedAt!) }}</span>
+          </div>
+        }
+        
+        @if (meeting()!.cancelledAt) {
+          <div class="info-item">
+            <span class="label">
+              <app-icon name="close" [size]="16" />
+              İptal Tarihi:
+            </span>
+            <span class="value">{{ formatDate(meeting()!.cancelledAt!) }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="documents-section">
+        <div class="section-header">
+          <h3>
+            <app-icon name="document" [size]="20" />
+            Dökümanlar ({{ meeting()!.documents.length }})
+          </h3>
+          @if (!meeting()!.isCancelled) {
+            <button class="btn btn-primary btn-sm" (click)="fileInput.click()">
+              <app-icon name="plus" [size]="16" />
+              Döküman Ekle
+            </button>
+          }
+        </div>
+
+        <input 
+          #fileInput
+          type="file" 
+          (change)="onFileSelect($event)"
+          hidden
+        >
+
+        @if (showUploadError()) {
+          <div class="upload-error">
+            <div class="error-content">
+              <app-icon name="error" [size]="20" />
+              <span>{{ uploadError() }}</span>
+            </div>
+            <button class="error-close" (click)="showUploadError.set(false)">
+              <app-icon name="close" [size]="16" />
+            </button>
+          </div>
+        }
+
+        @if (uploading()) {
+          <div class="upload-progress">
+            <div class="spinner"></div>
+            <span>Yükleniyor...</span>
+          </div>
+        }
+
+        @if (meeting()!.documents.length === 0) {
+          <div class="empty-documents">
+            <p>Henüz döküman eklenmemiş</p>
+          </div>
+        } @else {
+          <div class="documents-list">
+            @for (doc of meeting()!.documents; track doc.id) {
+              <div class="document-item">
+                <div class="document-info">
+                  <span class="document-icon">
+                    <app-icon name="document" [size]="24" color="#6366f1" />
+                  </span>
+                  <div class="document-details">
+                    <span class="document-name">{{ doc.originalFileName }}</span>
+                    <span class="document-meta">
+                      {{ formatFileSize(doc.fileSize) }} • {{ formatDate(doc.uploadedAt) }}
+                    </span>
+                  </div>
+                </div>
+                <div class="document-actions">
+                  <button class="btn-icon" (click)="downloadDocument(doc)" title="İndir">
+                    <app-icon name="download" [size]="20" />
+                  </button>
+                  @if (!meeting()!.isCancelled) {
+                    <button class="btn-icon danger" (click)="deleteDocument(doc.id)" title="Sil">
+                      <app-icon name="trash" [size]="20" />
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="detail-footer">
+      <button class="btn btn-secondary" routerLink="/meetings">
+        <app-icon name="arrow-left" [size]="18" />
+        Toplantılara Dön
+      </button>
+    </div>
+  }
+</div>

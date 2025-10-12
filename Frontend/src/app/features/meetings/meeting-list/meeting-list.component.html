@@ -1,0 +1,88 @@
+<div class="meetings-container">
+  <div class="meetings-header">
+    <h1>Toplantılarım</h1>
+    <button class="btn btn-primary" (click)="createMeeting()">
+      <app-icon name="plus" [size]="18" />
+      Yeni Toplantı
+    </button>
+  </div>
+
+  <div class="tabs">
+    <button 
+      class="tab" 
+      [class.active]="activeTab() === 'upcoming'"
+      (click)="changeTab('upcoming')">
+      Yaklaşan
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="activeTab() === 'all'"
+      (click)="changeTab('all')">
+      Tümü
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="activeTab() === 'past'"
+      (click)="changeTab('past')">
+      Geçmiş
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="activeTab() === 'cancelled'"
+      (click)="changeTab('cancelled')">
+      İptal Edilenler
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner-large"></div>
+      <p>Toplantılar yükleniyor...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="error-state">
+      <p>{{ errorMessage() }}</p>
+      <button class="btn btn-primary" (click)="loadMeetings()">Tekrar Dene</button>
+    </div>
+  } @else if (meetings().length === 0) {
+    <div class="empty-state">
+      <h3>Toplantı bulunamadı</h3>
+    </div>
+  } @else {
+    <div class="meetings-grid">
+      @for (meeting of meetings(); track meeting.id) {
+        <div class="meeting-card" (click)="viewDetail(meeting.id)">
+          <div class="meeting-card-header">
+            <h3>{{ meeting.title }}</h3>
+            <span class="badge" [class]="getStatusClass(meeting)">
+              <app-icon [name]="getStatusIcon(meeting)" [size]="14" />
+              {{ getStatusText(meeting) }}
+            </span>
+          </div>
+          
+          @if (meeting.description) {
+            <p class="meeting-description">{{ meeting.description }}</p>
+          }
+          
+          <div class="meeting-info">
+            <div class="info-item">
+              <span class="label">Başlangıç:</span>
+              <span class="value">{{ formatDate(meeting.startDate) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Bitiş:</span>
+              <span class="value">{{ formatDate(meeting.endDate) }}</span>
+            </div>
+          </div>
+          
+          @if (meeting.documents.length > 0) {
+            <div class="documents-count">
+              <app-icon name="document" [size]="16" />
+              {{ meeting.documents.length }} Döküman
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,8 @@
+@if (isAuthenticated$ | async) {
+  <app-header />
+  <app-sidebar />
+}
+
+<main class="app-main" [class.with-sidebar]="(isAuthenticated$ | async)">
+  <router-outlet></router-outlet>
+</main>

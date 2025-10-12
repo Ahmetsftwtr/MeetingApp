@@ -23,5 +23,7 @@ namespace MeetingApp.Models.DTOs.User
         [Required(ErrorMessage = "Şifre gereklidir")]
         [MinLength(8, ErrorMessage = "Şifre en az 8 karakter olmalıdır")]
         public string Password { get; set; } = string.Empty;
+
+
     }
 }
