@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MeetingApp.Business\MeetingApp.Business.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="EmailTemplates\" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.21" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.21" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="EmailTemplates\Layout.html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="EmailTemplates\WelcomeEmail.html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+</Project>

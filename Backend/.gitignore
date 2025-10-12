@@ -1,0 +1,25 @@
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# Packages
+packages/
+*.nupkg
+
+
+# Uploads
+wwwroot/uploads/
+
+# OS
+.DS_Store
+Thumbs.db
