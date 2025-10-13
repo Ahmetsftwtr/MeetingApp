@@ -13,7 +13,7 @@ import { Title } from '@angular/platform-browser';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  private fb = inject(FormBuilder);
+  private fb = inject(FormBuilder); 
   private authService = inject(AuthService);
   private router = inject(Router);
   private titleService = inject(Title);

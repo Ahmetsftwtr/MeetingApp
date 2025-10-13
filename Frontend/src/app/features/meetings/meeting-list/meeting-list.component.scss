@@ -1,5 +1,5 @@
-@import '../../../../assets/scss/abstracts/variables';
-@import '../../../../assets/scss/abstracts/mixins';
+@use '../../../../assets/scss/abstracts/variables' as *;
+@use '../../../../assets/scss/abstracts/mixins' as *;
 
 .meetings-container {
   max-width: 1200px;
@@ -45,7 +45,11 @@
   display: flex;
   gap: $spacing-1;
   margin-bottom: $spacing-3;
-  border-bottom: 2px solid $gray-200;
+  border: 2px solid $gray-200;
+  background: $white;
+  padding: 0em $spacing-1;
+  border-radius: $border-radius;
+
   
   @include mobile {
     overflow-x: auto;

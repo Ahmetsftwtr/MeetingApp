@@ -10,12 +10,12 @@ namespace MeetingApp.Business.Services.Email
     public class EmailService : IEmailService
     {
         private readonly IBus _bus;
-        private readonly string _appUrl;
+        private readonly string _webUrl;
 
         public EmailService(IBus bus, IConfiguration configuration)
         {
             _bus = bus;
-            _appUrl = configuration["AppSettings:BaseUrl"] ?? "https://localhost:7285";
+            _webUrl = configuration["AppSettings:WebUrl"] ?? "https://localhost:7285";
         }
 
         public void QueueWelcomeEmail(string toEmail, string userName)
@@ -28,7 +28,7 @@ namespace MeetingApp.Business.Services.Email
                 TemplateData = new Dictionary<string, string>
                 {
                     { "UserName", userName },
-                    { "AppUrl", _appUrl },
+                    { "AppUrl", _webUrl },
                     { "RegisterDate", DateTime.Now.ToString("dd MMMM yyyy HH:mm") }
                 }
             };
@@ -52,7 +52,7 @@ namespace MeetingApp.Business.Services.Email
                     { "StartDate", startDate.ToString("dd MMMM yyyy HH:mm") },
                     { "EndDate", endDate.ToString("dd MMMM yyyy HH:mm") },
                     { "Description", description },
-                    { "AppUrl", _appUrl },
+                    { "AppUrl", _webUrl },
                     { "CurrentYear", DateTime.Now.Year.ToString() }
                 }
             };

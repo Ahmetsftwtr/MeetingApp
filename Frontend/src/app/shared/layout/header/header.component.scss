@@ -1,9 +1,8 @@
-@import '../../../../assets/scss/abstracts/variables';
-@import '../../../../assets/scss/abstracts/mixins';
+@use '../../../../assets/scss/abstracts/variables' as *;
+@use '../../../../assets/scss/abstracts/mixins' as *;
 
 .app-header {
   background: $white;
-  border-bottom: 1px solid $gray-200;
   position: sticky;
   top: 0;
   z-index: 1000;

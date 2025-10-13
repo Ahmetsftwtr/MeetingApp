@@ -15,11 +15,11 @@ services:
     networks:
       - meetingapp-network
     healthcheck:
-      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Octapull123 -Q "SELECT 1" || exit 1
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Octapull123 -Q 'SELECT 1' -C || exit 1"]
       interval: 10s
-      timeout: 3s
-      retries: 10
-      start_period: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -46,23 +46,9 @@ services:
       dockerfile: Dockerfile
     container_name: meetingapp-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MeetingAppDb;User Id=sa;Password=Octapull123;TrustServerCertificate=True;MultipleActiveResultSets=True;
-      - MessageBroker=amqp://guest:guest@rabbitmq:5672
-      - Jwt__Secret=your-super-secret-jwt-key-must-be-at-least-32-characters-long!
-      - Jwt__Issuer=MeetingApp
-      - Jwt__Audience=MeetingAppUsers
-      - Jwt__ExpiryMinutes=60
-      - EmailSettings__SmtpHost=smtp.gmail.com
-      - EmailSettings__SmtpPort=587
-      - EmailSettings__SenderEmail=noreply@meetingapp.com
-      - EmailSettings__SenderName=MeetingApp
-      - EmailSettings__Username=test@gmail.com
-      - EmailSettings__Password=test-app-password
-      - AppSettings__BaseUrl=http://localhost:4200
+      - ASPNETCORE_ENVIRONMENT=Docker
     ports:
-      - "8080:80"
+      - "7000:8080"
     depends_on:
       sqlserver:
         condition: service_healthy
