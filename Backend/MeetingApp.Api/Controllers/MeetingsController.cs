@@ -18,15 +18,6 @@ namespace MeetingApp.Api.Controllers
             _meetingService = meetingService;
         }
 
-        private Guid GetCurrentUserId()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
-            {
-                throw new UnauthorizedAccessException("Kullanýcý kimliði bulunamadý");
-            }
-            return userId;
-        }
 
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateMeetingDto dto)
@@ -34,10 +25,8 @@ namespace MeetingApp.Api.Controllers
             var userId = GetCurrentUserId();
             var result = await _meetingService.CreateMeetingAsync(userId, dto);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
+            return HandleResult(result);
 
-            return Ok(result);
         }
 
         [HttpPut("{id}")]
@@ -46,10 +35,8 @@ namespace MeetingApp.Api.Controllers
             var userId = GetCurrentUserId();
             var result = await _meetingService.UpdateMeetingAsync(id, userId, dto);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
+            return HandleResult(result);
 
-            return Ok(result);
         }
 
         [HttpDelete("{id}")]
@@ -58,10 +45,8 @@ namespace MeetingApp.Api.Controllers
             var userId = GetCurrentUserId();
             var result = await _meetingService.DeleteMeetingAsync(id, userId);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
+            return HandleResult(result);
 
-            return Ok(result);
         }
 
         [HttpGet("{id}")]
@@ -70,10 +55,8 @@ namespace MeetingApp.Api.Controllers
             var userId = GetCurrentUserId();
             var result = await _meetingService.GetMeetingByIdAsync(id, userId);
 
-            if (!result.IsSuccess)
-                return NotFound(result);
+            return HandleResult(result);
 
-            return Ok(result);
         }
 
         [HttpGet("all")]
@@ -82,10 +65,8 @@ namespace MeetingApp.Api.Controllers
             var userId = GetCurrentUserId();
             var result = await _meetingService.GetAllMeetingsAsync(userId);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
+            return HandleResult(result);
 
-            return Ok(result);
         }
 
         [HttpGet("upcoming")]
@@ -94,10 +75,8 @@ namespace MeetingApp.Api.Controllers
             var userId = GetCurrentUserId();
             var result = await _meetingService.GetUpcomingMeetingsAsync(userId);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
+            return HandleResult(result);
 
-            return Ok(result);
         }
 
         [HttpGet("past")]
@@ -106,10 +85,8 @@ namespace MeetingApp.Api.Controllers
             var userId = GetCurrentUserId();
             var result = await _meetingService.GetPastMeetingsAsync(userId);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
+            return HandleResult(result);
 
-            return Ok(result);
         }
 
         [HttpGet("cancelled")]
@@ -118,10 +95,8 @@ namespace MeetingApp.Api.Controllers
             var userId = GetCurrentUserId();
             var result = await _meetingService.GetCancelledMeetingsAsync(userId);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
+            return HandleResult(result);
 
-            return Ok(result);
         }
 
         [HttpPatch("{id}/cancel")]
@@ -130,10 +105,8 @@ namespace MeetingApp.Api.Controllers
             var userId = GetCurrentUserId();
             var result = await _meetingService.CancelMeetingAsync(id, userId);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
+            return HandleResult(result);
 
-            return Ok(result);
         }
     }
 }

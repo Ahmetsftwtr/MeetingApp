@@ -2,8 +2,9 @@
 using MeetingApp.Models.ReturnTypes.Concrete;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
-namespace MeetingApp.Api;
+namespace MeetingApp.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -26,5 +27,14 @@ public class BaseApiController : ControllerBase
             HttpStatusCode.Gone => StatusCode((int)HttpStatusCode.Gone, result),
             _ => BadRequest(result),
         };
+    }
+
+    [NonAction]
+    public Guid GetCurrentUserId()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            throw new UnauthorizedAccessException("Kullanıcı kimliği bulunamadı");
+        return userId;
     }
 }

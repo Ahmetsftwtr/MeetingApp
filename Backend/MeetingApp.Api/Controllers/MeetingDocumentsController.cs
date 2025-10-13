@@ -21,13 +21,6 @@ namespace MeetingApp.Api.Controllers
             _documentService = documentService;
         }
 
-        private Guid GetCurrentUserId()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
-                throw new UnauthorizedAccessException("Kullanýcý kimliði bulunamadý");
-            return userId;
-        }
 
         [HttpPost("upload")]
         public async Task<IActionResult> Upload(Guid meetingId, IFormFile file)

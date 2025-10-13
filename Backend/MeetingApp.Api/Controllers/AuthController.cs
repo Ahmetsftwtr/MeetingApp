@@ -36,20 +36,15 @@ namespace MeetingApp.Api.Controllers
             }
 
             var result = await _userService.Register(dto, profileImageDto);
-            if (!result.IsSuccess)
-                return BadRequest(new { message = result.Message });
+            return HandleResult(result);
 
-            return Ok(result);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var result = await _userService.Login(dto);
-            if (!result.IsSuccess)
-                return Unauthorized(new { message = result.Message });
-
-            return Ok(result);
+            return HandleResult(result);
         }
 
         [HttpGet("me")]
@@ -61,10 +56,7 @@ namespace MeetingApp.Api.Controllers
                 return Unauthorized(new { success = false, message = "Kullanýcý kimliði bulunamadý" });
 
             var result = await _userService.GetProfile(userId);
-            if (!result.IsSuccess)
-                return NotFound(result);
-
-            return Ok(result);
+            return HandleResult(result);
         }
     }
 }
