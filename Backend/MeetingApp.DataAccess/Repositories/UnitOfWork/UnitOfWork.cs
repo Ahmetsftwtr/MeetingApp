@@ -3,6 +3,7 @@ using MeetingApp.DataAccess.Repositories.Abstractions;
 using MeetingApp.DataAccess.Repositories.Implementations;
 using MeetingApp.DataAccess.Repositories.Interfaces;
 using MeetingApp.Model.Entities;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,5 +33,10 @@ namespace MeetingApp.DataAccess.Repositories.UnitOfWork
 
 
         public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
+        }
     }
 }
