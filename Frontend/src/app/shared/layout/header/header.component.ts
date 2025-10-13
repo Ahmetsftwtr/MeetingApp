@@ -37,6 +37,7 @@ export class HeaderComponent {
   }
 
   getProfileImageUrl(path?: string): string {
+    console.log('Getting profile image URL for path:', path);
     return this.authService.getProfileImageUrl(path);
   }
 

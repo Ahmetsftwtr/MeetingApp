@@ -1,5 +1,6 @@
 using MeetingApp.Api.Filters;
 using MeetingApp.Business.Abstractions.User;
+using MeetingApp.Models.DTOs.File;
 using MeetingApp.Models.DTOs.User;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -16,9 +17,25 @@ namespace MeetingApp.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        public async Task<IActionResult> Register([FromForm] RegisterDto dto, IFormFile? profileImage)
         {
-            var result = await _userService.Register(dto);
+            FileUploadDto? profileImageDto = null;
+
+            if (profileImage != null && profileImage.Length > 0)
+            {
+                using var memoryStream = new MemoryStream();
+                await profileImage.CopyToAsync(memoryStream);
+
+                profileImageDto = new FileUploadDto
+                {
+                    OriginalFileName = profileImage.FileName,
+                    ContentType = profileImage.ContentType,
+                    FileSize = profileImage.Length,
+                    FileBytes = memoryStream.ToArray()
+                };
+            }
+
+            var result = await _userService.Register(dto, profileImageDto);
             if (!result.IsSuccess)
                 return BadRequest(new { message = result.Message });
 

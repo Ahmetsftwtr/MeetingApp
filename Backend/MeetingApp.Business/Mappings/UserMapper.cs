@@ -10,11 +10,11 @@ namespace MeetingApp.Business.Mappings
         {
             return new UserDto
             {
-                Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
-                Phone = user.Phone
+                Phone = user.Phone,
+                ProfileImagePath = user.ProfileImagePath
             };
         }
 

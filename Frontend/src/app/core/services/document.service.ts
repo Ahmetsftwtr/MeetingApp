@@ -30,14 +30,14 @@ export class DocumentService {
 
   download(meetingId: string, documentId: string): Observable<Blob> {
     return this.http.get(
-      `${this.apiUrl}/meetings/${meetingId}/documents/${documentId}/download`,
+      `${this.apiUrl}/MeetingDocuments/${documentId}/download`,
       { responseType: 'blob' }
     );
   }
 
   delete(meetingId: string, documentId: string): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(
-      `${this.apiUrl}/meetings/${meetingId}/documents/${documentId}`
+      `${this.apiUrl}/MeetingDocuments/${documentId}`
     );
   }
 

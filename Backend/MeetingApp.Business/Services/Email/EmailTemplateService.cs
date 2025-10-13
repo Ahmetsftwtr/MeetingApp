@@ -22,14 +22,14 @@ namespace MeetingApp.Business.Services.Email
             var layoutPath = Path.Combine(_templateBasePath, "Layout.html");
             var contentPath = Path.Combine(_templateBasePath, $"{templateName}.html");
 
-            if (!File.Exists(layoutPath))
+            if (!System.IO.File.Exists(layoutPath))
                 throw new FileNotFoundException($"Layout template not found: {layoutPath}");
 
-            if (!File.Exists(contentPath))
+            if (!System.IO.File.Exists(contentPath))
                 throw new FileNotFoundException($"Email template not found: {contentPath}");
 
-            var layout = File.ReadAllText(layoutPath);
-            var content = File.ReadAllText(contentPath);
+            var layout = System.IO.File.ReadAllText(layoutPath);
+            var content = System.IO.File.ReadAllText(contentPath);
 
             foreach (var item in data)
             {

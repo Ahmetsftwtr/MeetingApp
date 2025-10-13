@@ -1,8 +1,10 @@
 ﻿using MeetingApp.Business.Abstractions.Email;
+using MeetingApp.Business.Abstractions.File;
 using MeetingApp.Business.Abstractions.Meeting;
 using MeetingApp.Business.Abstractions.User;
 using MeetingApp.Business.Handlers.Email;
 using MeetingApp.Business.Services.Email;
+using MeetingApp.Business.Services.File;
 using MeetingApp.Business.Services.Jobs;
 using MeetingApp.Business.Services.Meeting;
 using MeetingApp.Business.Services.User;
@@ -42,6 +44,8 @@ namespace MeetingApp.Business
             services.AddScoped<IMeetingDocumentService, MeetingDocumentService>();
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IFileService, FileService>();
+
 
 
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();

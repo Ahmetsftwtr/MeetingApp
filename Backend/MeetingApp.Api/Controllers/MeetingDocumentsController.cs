@@ -1,5 +1,6 @@
 using MeetingApp.Api.Filters;
 using MeetingApp.Business.Abstractions.Meeting;
+using MeetingApp.Models.DTOs.File;
 using MeetingApp.Models.DTOs.Meeting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,9 +42,8 @@ namespace MeetingApp.Api.Controllers
                 fileBytes = memoryStream.ToArray();
             }
 
-            var dto = new UploadDocumentDto
+            var dto = new FileUploadDto
             {
-                FileName = file.FileName,
                 OriginalFileName = file.FileName,
                 ContentType = file.ContentType,
                 FileSize = file.Length,

@@ -23,10 +23,6 @@ export class MeetingService {
     return this.http.put<ApiResponse<MeetingDto>>(`${this.apiUrl}/${id}`, request);
   }
 
-  delete(id: string): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`);
-  }
-
   getById(id: string): Observable<ApiResponse<MeetingDto>> {
     return this.http.get<ApiResponse<MeetingDto>>(`${this.apiUrl}/${id}`);
   }

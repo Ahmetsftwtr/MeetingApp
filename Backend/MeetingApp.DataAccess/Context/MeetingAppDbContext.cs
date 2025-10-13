@@ -44,6 +44,7 @@ namespace MeetingApp.DataAccess.Context
             {
                 entity.ToTable("Meetings");
                 entity.HasKey(e => e.Id);
+                entity.ToTable(tb => tb.HasTrigger("trg_Meetings_AfterDelete"));
 
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.Property(e => e.Title).IsRequired().HasMaxLength(200);

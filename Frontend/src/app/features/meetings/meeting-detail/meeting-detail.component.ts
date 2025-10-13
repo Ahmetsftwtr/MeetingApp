@@ -133,18 +133,6 @@ export class MeetingDetailComponent implements OnInit {
     });
   }
 
-  deleteMeeting() {
-    const meeting = this.meeting();
-    if (!meeting || !confirm('Bu toplantıyı silmek istediğinizden emin misiniz?')) return;
-
-    this.meetingService.delete(meeting.id).subscribe({
-      next: (response) => {
-        if (response.isSuccess) {
-          this.router.navigate(['/meetings']);
-        }
-      }
-    });
-  }
 
   editMeeting() {
     const meeting = this.meeting();

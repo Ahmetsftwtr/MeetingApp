@@ -1,31 +1,29 @@
-﻿using MeetingApp.Business.Abstractions.Meeting;
+﻿using MeetingApp.Business.Abstractions.File;
+using MeetingApp.Business.Abstractions.Meeting;
 using MeetingApp.Business.Mappings;
 using MeetingApp.DataAccess.Repositories.UnitOfWork;
-using MeetingApp.Model.Entities;
+using MeetingApp.Models.DTOs.File;
 using MeetingApp.Models.DTOs.Meeting;
 using MeetingApp.Models.Entities;
 using MeetingApp.Models.ReturnTypes.Abstract;
 using MeetingApp.Models.ReturnTypes.Concrete;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MeetingApp.Business.Services.Meeting
 {
     public class MeetingDocumentService : IMeetingDocumentService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileService _fileService;
         private readonly string _baseUrl;
         private readonly string _uploadPath;
         private readonly string[] _allowedExtensions = { ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt", ".jpg", ".jpeg", ".png" };
         private const long MaxFileSize = 10 * 1024 * 1024;
 
-        public MeetingDocumentService(IUnitOfWork unitOfWork, IConfiguration configuration)
+        public MeetingDocumentService(IUnitOfWork unitOfWork,IFileService fileService, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
+            _fileService = fileService;
             _baseUrl = configuration["AppSettings:BaseUrl"] ?? "https://localhost:5001";
             _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "meetings");
 
@@ -33,7 +31,7 @@ namespace MeetingApp.Business.Services.Meeting
                 Directory.CreateDirectory(_uploadPath);
         }
 
-        public async Task<IResult> UploadDocumentAsync(Guid meetingId, Guid userId, UploadDocumentDto dto)
+        public async Task<IResult> UploadDocumentAsync(Guid meetingId, Guid userId, FileUploadDto dto)
         {
             try
             {
@@ -44,32 +42,21 @@ namespace MeetingApp.Business.Services.Meeting
                 if (meeting.UserId != userId)
                     return new ErrorResult("Bu toplantıya döküman yükleme yetkiniz yok.");
 
-                if (dto.FileBytes == null || dto.FileBytes.Length == 0)
-                    return new ErrorResult("Dosya seçilmedi.");
+                var uploadResult = await _fileService.UploadFileAsync(dto, "meeting-documents", meetingId.ToString());
+                if (!uploadResult.IsSuccess)
+                    return uploadResult;
 
-                var extension = Path.GetExtension(dto.OriginalFileName).ToLowerInvariant();
-                if (!_allowedExtensions.Contains(extension))
-                    return new ErrorResult($"Geçersiz dosya tipi. İzin verilen: {string.Join(", ", _allowedExtensions)}");
-
-                if (dto.FileSize > MaxFileSize)
-                    return new ErrorResult("Dosya boyutu 10 MB'dan büyük olamaz.");
-
-                var uniqueFileName = $"{Guid.NewGuid()}{extension}";
-                var filePath = Path.Combine(_uploadPath, uniqueFileName);
-
-                await File.WriteAllBytesAsync(filePath, dto.FileBytes);
-
-                var relativePath = Path.Combine("uploads", "meetings", uniqueFileName).Replace("\\", "/");
+                var uploadData = ((SuccessDataResult<FileUploadResultDto>)uploadResult).Data;
 
                 var document = new MeetingDocument
                 {
                     Id = Guid.NewGuid(),
-                    FileName = uniqueFileName,
-                    OriginalFileName = dto.OriginalFileName,
-                    FilePath = relativePath,
-                    FileExtension = extension,
-                    FileSize = dto.FileSize,
-                    ContentType = dto.ContentType,
+                    FileName = uploadData.FileName,
+                    OriginalFileName = uploadData.OriginalFileName,
+                    FilePath = uploadData.FilePath,
+                    FileExtension = uploadData.FileExtension,
+                    FileSize = uploadData.FileSize,
+                    ContentType = uploadData.ContentType,
                     MeetingId = meetingId,
                     UploadedAt = DateTime.UtcNow
                 };
@@ -79,10 +66,6 @@ namespace MeetingApp.Business.Services.Meeting
 
                 var resultDto = MeetingDocumentMapper.ToDto(document, _baseUrl);
                 return new SuccessDataResult<MeetingDocumentDto>(resultDto, "Döküman başarıyla yüklendi.");
-            }
-            catch (IOException ex)
-            {
-                return new ErrorResult($"Dosya kaydedilemedi: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -125,10 +108,10 @@ namespace MeetingApp.Business.Services.Meeting
                     return new ErrorResult("Bu dökümanı indirme yetkiniz yok.");
 
                 var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", document.FilePath);
-                if (!File.Exists(fullPath))
+                if (!System.IO.File.Exists(fullPath))
                     return new ErrorResult("Dosya sunucuda bulunamadı.");
 
-                var fileBytes = await File.ReadAllBytesAsync(fullPath);
+                var fileBytes = await System.IO.File.ReadAllBytesAsync(fullPath);
 
                 return new SuccessDataResult<(byte[] bytes, string contentType, string fileName)>(
                     (fileBytes, document.ContentType ?? "application/octet-stream", document.OriginalFileName),
@@ -154,8 +137,8 @@ namespace MeetingApp.Business.Services.Meeting
                     return new ErrorResult("Bu dökümanı silme yetkiniz yok.");
 
                 var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", document.FilePath);
-                if (File.Exists(fullPath))
-                    File.Delete(fullPath);
+                if (System.IO.File.Exists(fullPath))
+                    System.IO.File.Delete(fullPath);
 
                 _unitOfWork.MeetingDocuments.Remove(document);
                 await _unitOfWork.SaveChangesAsync();

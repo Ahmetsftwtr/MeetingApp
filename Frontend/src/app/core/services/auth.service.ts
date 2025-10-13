@@ -32,8 +32,17 @@ export class AuthService {
       .pipe(
         tap(response => {
           if (response.isSuccess && response.data) {
-            localStorage.setItem('token', response.data.accessToken);
-            this.fetchAndSetUserProfile();
+            localStorage.setItem('token', response.message);
+            const user: User = {
+              id: response.data.id,
+              firstName: response.data.firstName,
+              lastName: response.data.lastName,
+              email: response.data.email,
+              phone: response.data.phone,
+              profileImagePath: response.data.profileImagePath
+            };
+            localStorage.setItem('user', JSON.stringify(user));
+            this.currentUserSubject.next(user);
           }
         })
       );
@@ -61,7 +70,8 @@ export class AuthService {
               firstName: response.data.firstName,
               lastName: response.data.lastName,
               email: response.data.email,
-              phone: response.data.phone
+              phone: response.data.phone,
+              profileImagePath: response.data.profileImagePath
             };
             localStorage.setItem('user', JSON.stringify(user));
             this.currentUserSubject.next(user);
@@ -101,6 +111,6 @@ export class AuthService {
 
   getProfileImageUrl(path?: string): string {
     if (!path) return 'assets/images/default-avatar.png';
-    return `${environment.apiUrl}${path}`;
+    return `${environment.apiUrl}/${path}`;
   }
 }

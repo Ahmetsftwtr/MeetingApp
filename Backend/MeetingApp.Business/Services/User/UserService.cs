@@ -1,7 +1,9 @@
 ﻿using MeetingApp.Business.Abstractions.Email;
+using MeetingApp.Business.Abstractions.File;
 using MeetingApp.Business.Abstractions.User;
 using MeetingApp.Business.Mappings;
 using MeetingApp.DataAccess.Repositories.UnitOfWork;
+using MeetingApp.Models.DTOs.File;
 using MeetingApp.Models.DTOs.User;
 using MeetingApp.Models.ReturnTypes.Abstract;
 using MeetingApp.Models.ReturnTypes.Concrete;
@@ -17,17 +19,22 @@ namespace MeetingApp.Business.Services.User
         private readonly IJwtService _jwtService;
         private readonly IPasswordService _passwordService;
         private readonly IEmailService _emailService;
+        private readonly IFileService _fileService;
 
-
-        public UserService(IUnitOfWork unitOfWork, IJwtService jwtService, IPasswordService passwordService,IEmailService emailService)
+        public UserService(IUnitOfWork unitOfWork, 
+            IJwtService jwtService,
+            IPasswordService passwordService,
+            IFileService fileService,
+            IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _jwtService = jwtService;
             _passwordService = passwordService;
             _emailService = emailService;
+            _fileService = fileService;
         }
 
-        public async Task<IResult> Register(RegisterDto dto)
+        public async Task<IResult> Register(RegisterDto dto, FileUploadDto? profileImageDto)
         {
             try
             {
@@ -41,19 +48,25 @@ namespace MeetingApp.Business.Services.User
                 var passwordHash = _passwordService.HashPassword(dto.Password);
                 var user = UserMapper.ToEntity(dto, passwordHash);
 
+                if (profileImageDto != null)
+                {
+                    var uploadResult = await _fileService.UploadFileAsync(profileImageDto, "profile");
+                    if (uploadResult.IsSuccess)
+                    {
+                        var uploadData = ((SuccessDataResult<FileUploadResultDto>)uploadResult).Data;
+                        user.ProfileImagePath = uploadData.FilePath;
+                    }
+                }
+
                 await _unitOfWork.Users.AddAsync(user);
                 await _unitOfWork.SaveChangesAsync();
 
                 var token = _jwtService.GenerateAccessToken(user.Id, user.Email, $"{user.FirstName} {user.LastName}");
                 var resultDto = UserMapper.ToDto(user);
 
-                 _emailService.QueueWelcomeEmail(user.Email, $"{user.FirstName} {user.LastName}");
+                _emailService.QueueWelcomeEmail(user.Email, $"{user.FirstName} {user.LastName}");
 
                 return new SuccessDataResult<UserDto>(resultDto, token);
-            }
-            catch (DbUpdateException ex)
-            {
-                return new ErrorResult($"Veritabanı hatası: {ex.InnerException?.Message ?? ex.Message}");
             }
             catch (Exception ex)
             {
@@ -72,10 +85,10 @@ namespace MeetingApp.Business.Services.User
 
                 var token = _jwtService.GenerateAccessToken(user.Id, user.Email, $"{user.FirstName} {user.LastName}");
 
-                return new SuccessDataResult<UserLoginSuccessDto>(
-                    new UserLoginSuccessDto { AccessToken = token },
-                    "Giriş başarılı."
-                );
+                var resultDto = UserMapper.ToDto(user);
+
+
+                return new SuccessDataResult<UserDto>(resultDto, token);
             }
             catch (Exception ex)
             {
