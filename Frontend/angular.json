@@ -11,7 +11,7 @@
           "type": "component"
         },
         "@schematics/angular:service": {
-          "type":"service"
+          "type": "service"
         }
       },
       "root": "",
@@ -48,7 +48,13 @@
                   "maximumError": "10MB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,

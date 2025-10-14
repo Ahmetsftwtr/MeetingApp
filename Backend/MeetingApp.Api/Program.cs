@@ -123,6 +123,8 @@ try
         job => job.CleanupCancelledMeetingsAsync(),
         Cron.Daily(1));
 
+    app.MapFallbackToFile("index.html");
+
     app.UseStaticFiles();
     app.UseHttpsRedirection();
     app.UseCors("AllowAll");
