@@ -12,6 +12,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         router.navigate(['/auth/login']);
+        window.location.reload();
       }
 
       const errorMessage = error.error?.message || 'Bir hata oluştu';      

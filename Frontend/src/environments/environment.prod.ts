@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://octapull.ahmetprojects.tech'
+  apiUrl: 'https://octapull.ahmetprojects.tech/api'
 };

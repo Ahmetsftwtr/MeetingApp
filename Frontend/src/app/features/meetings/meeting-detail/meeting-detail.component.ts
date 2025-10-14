@@ -6,6 +6,7 @@ import { DocumentService } from '../../../core/services/document.service';
 import { MeetingDto, MeetingDocumentDto } from '../../../core/models/meeting/Response/meetingResponse.dto';
 import { Title } from '@angular/platform-browser';
 import { IconComponent } from '../../../shared/icon/icon.component';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-meeting-detail',
@@ -19,6 +20,7 @@ export class MeetingDetailComponent implements OnInit {
   private meetingService = inject(MeetingService);
   private documentService = inject(DocumentService);
   private titleService = inject(Title);
+  private confirmDialog = inject(ConfirmDialogService);
 
   meeting = signal<MeetingDto | null>(null);
   loading = signal(true);
@@ -105,9 +107,16 @@ export class MeetingDetailComponent implements OnInit {
     }
   }
 
-  deleteDocument(docId: string) {
+  async deleteDocument(docId: string) {
     const meeting = this.meeting();
-    if (!meeting || !confirm('Bu dökümanı silmek istediğinizden emin misiniz?')) return;
+    if (!meeting) return;
+
+    const confirmed = await this.confirmDialog.warn(
+      'Dökümanı Sil',
+      'Bu dökümanı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.'
+    );
+
+    if (!confirmed) return;
 
     this.documentService.delete(meeting.id, docId).subscribe({
       next: (response) => {
@@ -120,9 +129,17 @@ export class MeetingDetailComponent implements OnInit {
     });
   }
 
-  cancelMeeting() {
+  async cancelMeeting() {
     const meeting = this.meeting();
-    if (!meeting || !confirm('Bu toplantıyı iptal etmek istediğinizden emin misiniz?')) return;
+    if (!meeting) return;
+
+    const confirmed = await this.confirmDialog.danger(
+      'Toplantıyı İptal Et',
+      'Bu toplantıyı iptal etmek istediğinizden emin misiniz? İptal edilen toplantılar geri alınamaz.',
+      'İptal Et'
+    );
+
+    if (!confirmed) return;
 
     this.meetingService.cancel(meeting.id).subscribe({
       next: (response) => {

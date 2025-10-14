@@ -1,4 +1,5 @@
 @use '../abstracts/variables' as *;
+@use 'sass:color';
 .btn {
   padding: 12px 24px;
   border-radius: $border-radius;
@@ -38,7 +39,7 @@
     color: $white;
 
     &:hover:not(:disabled) {
-      background-color: darken($danger, 10%);
+      background-color: color.adjust($danger, $lightness: -10%);
     }
   }
 

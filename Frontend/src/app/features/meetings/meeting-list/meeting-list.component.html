@@ -10,15 +10,15 @@
   <div class="tabs">
     <button 
       class="tab" 
-      [class.active]="activeTab() === 'upcoming'"
-      (click)="changeTab('upcoming')">
-      Yaklaşan
-    </button>
-    <button 
-      class="tab" 
       [class.active]="activeTab() === 'all'"
       (click)="changeTab('all')">
       Tümü
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="activeTab() === 'upcoming'"
+      (click)="changeTab('upcoming')">
+      Yaklaşan
     </button>
     <button 
       class="tab" 

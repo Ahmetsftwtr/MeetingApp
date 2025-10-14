@@ -20,7 +20,7 @@ export class MeetingListComponent implements OnInit {
   meetings = signal<MeetingDto[]>([]);
   loading = signal(true);
   errorMessage = signal('');
-  activeTab = signal<'all' | 'upcoming' | 'past' | 'cancelled'>('upcoming');
+  activeTab = signal<'all' | 'upcoming' | 'past' | 'cancelled'>('all');
 
   constructor() {
     this.titleService.setTitle('Toplantılar - Meeting App');

@@ -31,18 +31,8 @@ export class AuthService {
     return this.http.post<ApiResponse<LoginResponse>>(`${this.apiUrl}/login`, request)
       .pipe(
         tap(response => {
-          if (response.isSuccess && response.data) {
-            localStorage.setItem('token', response.message);
-            const user: User = {
-              id: response.data.id,
-              firstName: response.data.firstName,
-              lastName: response.data.lastName,
-              email: response.data.email,
-              phone: response.data.phone,
-              profileImagePath: response.data.profileImagePath
-            };
-            localStorage.setItem('user', JSON.stringify(user));
-            this.currentUserSubject.next(user);
+          if (response.isSuccess && response.data && response.message) {
+            this.handleAuthResponse(response);
           }
         })
       );
@@ -64,38 +54,29 @@ export class AuthService {
       .pipe(
         tap(response => {
           if (response.isSuccess && response.data && response.message) {
-            localStorage.setItem('token', response.message);
-            const user: User = {
-              id: response.data.id,
-              firstName: response.data.firstName,
-              lastName: response.data.lastName,
-              email: response.data.email,
-              phone: response.data.phone,
-              profileImagePath: response.data.profileImagePath
-            };
-            localStorage.setItem('user', JSON.stringify(user));
-            this.currentUserSubject.next(user);
+            this.handleAuthResponse(response);
+
           }
         })
       );
   }
 
-  getProfile(): Observable<ApiResponse<User>> {
-    return this.http.get<ApiResponse<User>>(`${this.apiUrl}/me`);
-  }
 
-  private fetchAndSetUserProfile(): void {
-    this.getProfile().subscribe({
-      next: (response) => {
-        if (response.isSuccess && response.data) {
-          localStorage.setItem('user', JSON.stringify(response.data));
-          this.currentUserSubject.next(response.data);
-        }
-      },
-      error: () => {
-        this.logout();
-      }
-    });
+  private handleAuthResponse(response: ApiResponse<LoginResponse | RegisterResponse>): void {
+    if (response.isSuccess && response.data) {
+      localStorage.setItem('token', response.message);
+      const user: User = {
+        id: response.data.id,
+        firstName: response.data.firstName,
+        lastName: response.data.lastName,
+        email: response.data.email,
+        phone: response.data.phone,
+        profileImagePath: response.data.profileImagePath
+      };
+      localStorage.setItem('user', JSON.stringify(user));
+      this.currentUserSubject.next(user);
+
+    }
   }
 
   logout(): void {

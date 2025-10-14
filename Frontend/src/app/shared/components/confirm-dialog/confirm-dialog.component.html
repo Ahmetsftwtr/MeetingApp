@@ -1,0 +1,28 @@
+@if (isOpen()) {
+  <div class="dialog-overlay" (click)="close(false)">
+    <div class="dialog-container" (click)="$event.stopPropagation()">
+      <div class="dialog-header" [class]="data()?.type">
+        <div class="dialog-icon">
+          <app-icon [name]="getIcon()" [size]="32" />
+        </div>
+        <h2>{{ data()?.title }}</h2>
+      </div>
+
+      <div class="dialog-content">
+        <p>{{ data()?.message }}</p>
+      </div>
+
+      <div class="dialog-actions">
+        <button class="btn btn-secondary" (click)="close(false)">
+          {{ data()?.cancelText }}
+        </button>
+        <button 
+          class="btn" 
+          [class]="'btn-' + data()?.type"
+          (click)="close(true)">
+          {{ data()?.confirmText }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

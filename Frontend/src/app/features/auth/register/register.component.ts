@@ -6,11 +6,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { SearchCountryField, CountryISO } from 'ngx-intl-tel-input';
 import { Title } from '@angular/platform-browser';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, NgxIntlTelInputModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, NgxIntlTelInputModule, IconComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
@@ -51,6 +52,11 @@ export class RegisterComponent {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  removePhoto() {
+    this.selectedFile.set(null);
+    this.previewUrl.set(null);
   }
 
   onSubmit() {

@@ -16,13 +16,21 @@
 
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       <div class="profile-upload">
-        <div class="avatar-preview" (click)="fileInput.click()">
+        <div class="avatar-preview">
           @if (previewUrl()) {
             <img [src]="previewUrl()" alt="Preview">
+            <div class="avatar-actions">
+              <button type="button" class="avatar-action-btn change" (click)="fileInput.click()" title="Değiştir">
+                <app-icon name="edit" [size]="16" />
+              </button>
+              <button type="button" class="avatar-action-btn delete" (click)="removePhoto()" title="Sil">
+                <app-icon name="trash" [size]="16" />
+              </button>
+            </div>
           } @else {
-            <div class="placeholder">
-              <span>📷</span>
-              <p>Profil Fotoğrafı</p>
+            <div class="placeholder" (click)="fileInput.click()">
+              <app-icon name="user" [size]="48" />
+              <p>Profil Fotoğrafı Seç</p>
             </div>
           }
         </div>

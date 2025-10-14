@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace MeetingApp.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class BaseApiController : ControllerBase
 {
     [NonAction]

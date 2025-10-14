@@ -1,27 +1,35 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './features/auth/login/login.component';
-import { RegisterComponent } from './features/auth/register/register.component';
-import { MeetingDetailComponent } from './features/meetings/meeting-detail/meeting-detail.component';
-import { MeetingCreateComponent } from './features/meetings/meeting-create/meeting-create.component';
-import { MeetingListComponent } from './features/meetings/meeting-list/meeting-list.component';
-import { MeetingEditComponent } from './features/meetings/meeting-edit/meeting-edit.component';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'auth/login',
+        redirectTo: '/meetings',
         pathMatch: 'full'
     },
     {
-        path: 'auth/login',
-        component: LoginComponent
-    },
-    {
-        path: 'auth/register',
-        component: RegisterComponent
+        path: 'auth',
+        canActivate: [guestGuard],
+        children: [
+            {
+                path: '',
+                redirectTo: 'login',
+                pathMatch: 'full'
+            },
+            {
+                path: 'login',
+                loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
+            },
+            {
+                path: 'register',
+                loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
+            }
+        ]
     },
     {
         path: 'meetings',
+        canActivate: [authGuard],
         children: [
             {
                 path: '',
@@ -30,21 +38,24 @@ export const routes: Routes = [
             },
             {
                 path: 'list',
-                component: MeetingListComponent
+                loadComponent: () => import('./features/meetings/meeting-list/meeting-list.component').then(m => m.MeetingListComponent)
             },
             {
                 path: 'create',
-                component: MeetingCreateComponent
+                loadComponent: () => import('./features/meetings/meeting-create/meeting-create.component').then(m => m.MeetingCreateComponent)
             },
             {
                 path: ':id/edit',
-                component: MeetingEditComponent
+                loadComponent: () => import('./features/meetings/meeting-edit/meeting-edit.component').then(m => m.MeetingEditComponent)
             },
             {
                 path: ':id',
-                component: MeetingDetailComponent
-            },
-            
+                loadComponent: () => import('./features/meetings/meeting-detail/meeting-detail.component').then(m => m.MeetingDetailComponent)
+            }
         ]
+    },
+    {
+        path: '**',
+        redirectTo: '/meetings'
     }
 ];
