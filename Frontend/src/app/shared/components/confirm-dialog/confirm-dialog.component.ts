@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { IconComponent } from '../../icon/icon.component';
+import { IconComponent } from '../icon/icon.component';
 
 export interface ConfirmDialogData {
   title: string;

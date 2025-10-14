@@ -13,7 +13,6 @@ namespace MeetingApp.Business.Mappings
             {
                 Id = document.Id,
                 OriginalFileName = document.OriginalFileName,
-                Url = $"{baseUrl}/{document.FilePath}", 
                 FileExtension = document.FileExtension ?? string.Empty,
                 FileSize = FormatFileSize(document.FileSize),
                 UploadedAt = document.UploadedAt

@@ -5,7 +5,7 @@ import { MeetingService } from '../../../core/services/meeting.service';
 import { DocumentService } from '../../../core/services/document.service';
 import { MeetingDto, MeetingDocumentDto } from '../../../core/models/meeting/Response/meetingResponse.dto';
 import { Title } from '@angular/platform-browser';
-import { IconComponent } from '../../../shared/icon/icon.component';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 
 @Component({
@@ -204,5 +204,13 @@ export class MeetingDetailComponent implements OnInit {
     if (now < start) return 'calendar';
     if (now > end) return 'check';
     return 'clock';
+  }
+
+  isFutureMeeting(): boolean {
+    const meeting = this.meeting();
+    if (!meeting) return false;
+    const now = new Date();
+    const end = new Date(meeting.endDate);
+    return now < end && !meeting.isCancelled;
   }
 }

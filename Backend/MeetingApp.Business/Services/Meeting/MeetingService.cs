@@ -2,6 +2,7 @@
 using MeetingApp.Business.Abstractions.Meeting;
 using MeetingApp.Business.Mappings;
 using MeetingApp.DataAccess.Repositories.UnitOfWork;
+using MeetingApp.Models.DTOs.Common;
 using MeetingApp.Models.DTOs.Meeting;
 using MeetingApp.Models.ReturnTypes.Abstract;
 using MeetingApp.Models.ReturnTypes.Concrete;
@@ -9,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -224,63 +224,52 @@ namespace MeetingApp.Business.Services.Meeting
             }
         }
 
-        public async Task<IResult> GetAllMeetingsAsync(Guid userId)
+        public async Task<IResult> GetFilteredMeetingsAsync(Guid userId, MeetingFilterDto filter)
         {
             try
             {
-                _logger.LogInformation("Fetching all meetings for user: {UserId}", userId);
+                _logger.LogInformation(
+                    "Fetching filtered meetings for user: {UserId} with status: {Status}, page: {PageNumber}, pageSize: {PageSize}",
+                    userId,
+                    filter.Status,
+                    filter.PageNumber,
+                    filter.PageSize);
 
-                var meetings = await _unitOfWork.Meetings.GetByUserIdAsync(userId);
-                var resultDtos = MeetingMapper.ToDtoList(meetings, _baseUrl).ToList();
+                if (filter.PageNumber < 1)
+                    filter.PageNumber = 1;
 
-                _logger.LogInformation("Found {Count} meetings for user: {UserId}", resultDtos.Count, userId);
+                if (filter.PageSize < 1 || filter.PageSize > 100)
+                    filter.PageSize = 10;
 
-                return new SuccessDataResult<List<MeetingDto>>(resultDtos, $"{resultDtos.Count} toplantı getirildi.");
+                var (meetings, totalCount) = await _unitOfWork.Meetings.GetFilteredMeetingsAsync(userId, filter);
+
+                var meetingDtos = MeetingMapper.ToDtoList(meetings, _baseUrl).ToList();
+                var totalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize);
+
+                var pagedResult = new PagedResultDto<MeetingDto>
+                {
+                    Items = meetingDtos,
+                    PageNumber = filter.PageNumber,
+                    PageSize = filter.PageSize,
+                    TotalCount = totalCount,
+                    TotalPages = totalPages
+                };
+
+                _logger.LogInformation(
+                    "Found {Count} meetings (page {PageNumber} of {TotalPages}) for user: {UserId}",
+                    meetingDtos.Count,
+                    filter.PageNumber,
+                    totalPages,
+                    userId);
+
+                return new SuccessDataResult<PagedResultDto<MeetingDto>>(
+                    pagedResult,
+                    $"Sayfa {filter.PageNumber}/{totalPages} - Toplam {totalCount} toplantıdan {meetingDtos.Count} tanesi getirildi.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching all meetings for user: {UserId}", userId);
+                _logger.LogError(ex, "Error occurred while fetching filtered meetings for user: {UserId}", userId);
                 return new ErrorResult($"Toplantılar getirilirken bir hata oluştu: {ex.Message}");
-            }
-        }
-
-        public async Task<IResult> GetUpcomingMeetingsAsync(Guid userId)
-        {
-            try
-            {
-                _logger.LogInformation("Fetching upcoming meetings for user: {UserId}", userId);
-
-                var meetings = await _unitOfWork.Meetings.GetUpcomingMeetingsAsync(userId);
-                var resultDtos = MeetingMapper.ToDtoList(meetings, _baseUrl).ToList();
-
-                _logger.LogInformation("Found {Count} upcoming meetings for user: {UserId}", resultDtos.Count, userId);
-
-                return new SuccessDataResult<List<MeetingDto>>(resultDtos, $"{resultDtos.Count} gelecek toplantı getirildi.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while fetching upcoming meetings for user: {UserId}", userId);
-                return new ErrorResult($"Gelecek toplantılar getirilirken bir hata oluştu: {ex.Message}");
-            }
-        }
-
-        public async Task<IResult> GetPastMeetingsAsync(Guid userId)
-        {
-            try
-            {
-                _logger.LogInformation("Fetching past meetings for user: {UserId}", userId);
-
-                var meetings = await _unitOfWork.Meetings.GetPastMeetingsAsync(userId);
-                var resultDtos = MeetingMapper.ToDtoList(meetings, _baseUrl).ToList();
-
-                _logger.LogInformation("Found {Count} past meetings for user: {UserId}", resultDtos.Count, userId);
-
-                return new SuccessDataResult<List<MeetingDto>>(resultDtos, $"{resultDtos.Count} geçmiş toplantı getirildi.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while fetching past meetings for user: {UserId}", userId);
-                return new ErrorResult($"Geçmiş toplantılar getirilirken bir hata oluştu: {ex.Message}");
             }
         }
 
@@ -335,32 +324,6 @@ namespace MeetingApp.Business.Services.Meeting
             {
                 _logger.LogError(ex, "Error occurred during meeting cancellation: {MeetingId}", meetingId);
                 return new ErrorResult($"Toplantı iptal edilirken bir hata oluştu: {ex.Message}");
-            }
-        }
-
-        public async Task<IResult> GetCancelledMeetingsAsync(Guid userId)
-        {
-            try
-            {
-                _logger.LogInformation("Fetching cancelled meetings for user: {UserId}", userId);
-
-                var meetings = await _unitOfWork.Meetings
-                    .GetAllQueryable()
-                    .Where(m => m.UserId == userId && m.IsCancelled)
-                    .Include(m => m.Documents)
-                    .OrderByDescending(m => m.CancelledAt)
-                    .ToListAsync();
-
-                var resultDtos = MeetingMapper.ToDtoList(meetings, _baseUrl).ToList();
-
-                _logger.LogInformation("Found {Count} cancelled meetings for user: {UserId}", resultDtos.Count, userId);
-
-                return new SuccessDataResult<List<MeetingDto>>(resultDtos, $"{resultDtos.Count} iptal edilmiş toplantı getirildi.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while fetching cancelled meetings for user: {UserId}", userId);
-                return new ErrorResult($"İptal edilmiş toplantılar getirilirken bir hata oluştu: {ex.Message}");
             }
         }
     }

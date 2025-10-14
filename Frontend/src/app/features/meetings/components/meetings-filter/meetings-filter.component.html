@@ -1,0 +1,115 @@
+<div class="filters-section">
+  <div class="search-and-toggle">
+    <div class="search-box">
+      <app-icon name="search" [size]="20" />
+      <input 
+        type="text" 
+        placeholder="Toplantı ara..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      >
+    </div>
+    
+    <button 
+      class="btn-filter" 
+      [class.active]="showFilters() || hasActiveFilters()"
+      (click)="toggleFilters()">
+      <app-icon name="filter" [size]="18" />
+      Filtrele
+      @if (hasActiveFilters()) {
+        <span class="filter-badge">●</span>
+      }
+    </button>
+  </div>
+
+  @if (showFilters()) {
+    <div class="filters-panel">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label>Başlangıç Tarihi (Min)</label>
+          <input 
+            type="date" 
+            [(ngModel)]="startDateFrom"
+            (change)="applyFilters()"
+          >
+        </div>
+
+        <div class="filter-group">
+          <label>Başlangıç Tarihi (Max)</label>
+          <input 
+            type="date" 
+            [(ngModel)]="startDateTo"
+            (change)="applyFilters()"
+          >
+        </div>
+
+        <div class="filter-group">
+          <label>Bitiş Tarihi (Min)</label>
+          <input 
+            type="date" 
+            [(ngModel)]="endDateFrom"
+            (change)="applyFilters()"
+          >
+        </div>
+
+        <div class="filter-group">
+          <label>Bitiş Tarihi (Max)</label>
+          <input 
+            type="date" 
+            [(ngModel)]="endDateTo"
+            (change)="applyFilters()"
+          >
+        </div>
+
+        <div class="filter-group">
+          <label>Sıralama</label>
+          <div class="sort-buttons">
+            <button 
+              class="sort-btn" 
+              [class.active]="sortBy() === 'StartDate'"
+              (click)="onSortChange('StartDate')">
+              Başlangıç
+              @if (sortBy() === 'StartDate') {
+                <app-icon [name]="sortDesc() ? 'arrow-down' : 'arrow-up'" [size]="14" />
+              }
+            </button>
+            <button 
+              class="sort-btn" 
+              [class.active]="sortBy() === 'EndDate'"
+              (click)="onSortChange('EndDate')">
+              Bitiş
+              @if (sortBy() === 'EndDate') {
+                <app-icon [name]="sortDesc() ? 'arrow-down' : 'arrow-up'" [size]="14" />
+              }
+            </button>
+            <button 
+              class="sort-btn" 
+              [class.active]="sortBy() === 'Title'"
+              (click)="onSortChange('Title')">
+              İsim
+              @if (sortBy() === 'Title') {
+                <app-icon [name]="sortDesc() ? 'arrow-down' : 'arrow-up'" [size]="14" />
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <div class="page-size-selector">
+          <label>Sayfa Başına:</label>
+          <select [value]="pageSize()" (change)="onPageSizeChange($any($event.target).value)">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" (click)="onClearFilters()">
+          <app-icon name="close" [size]="16" />
+          Filtreleri Temizle
+        </button>
+      </div>
+    </div>
+  }
+</div>

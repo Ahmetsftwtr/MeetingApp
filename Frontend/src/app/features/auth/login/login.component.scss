@@ -105,6 +105,10 @@
     border-radius: $border-radius;
     font-size: $font-size-base;
     transition: all $transition;
+    -webkit-transition: all $transition;
+    -moz-transition: all $transition;
+    -ms-transition: all $transition;
+    -o-transition: all $transition;
     
     &:focus {
       outline: none;

@@ -1,0 +1,30 @@
+@if (totalPages() > 1) {
+  <div class="pagination">
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage() === 1"
+      (click)="onPageChange(currentPage() - 1)">
+      <app-icon name="arrow-left" [size]="16" />
+    </button>
+
+    @for (page of visiblePages(); track page) {
+      @if (page === -1) {
+        <span class="pagination-dots">...</span>
+      } @else {
+        <button 
+          class="pagination-btn page-number" 
+          [class.active]="currentPage() === page"
+          (click)="onPageChange(page)">
+          {{ page }}
+        </button>
+      }
+    }
+
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage() === totalPages()"
+      (click)="onPageChange(currentPage() + 1)">
+      <app-icon name="arrow-right" [size]="16" />
+    </button>
+  </div>
+}

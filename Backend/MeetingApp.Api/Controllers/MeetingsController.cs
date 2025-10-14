@@ -3,7 +3,6 @@ using MeetingApp.Business.Abstractions.Meeting;
 using MeetingApp.Models.DTOs.Meeting;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MeetingApp.Api.Controllers
@@ -18,15 +17,12 @@ namespace MeetingApp.Api.Controllers
             _meetingService = meetingService;
         }
 
-
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateMeetingDto dto)
         {
             var userId = GetCurrentUserId();
             var result = await _meetingService.CreateMeetingAsync(userId, dto);
-
             return HandleResult(result);
-
         }
 
         [HttpPut("{id}")]
@@ -34,9 +30,7 @@ namespace MeetingApp.Api.Controllers
         {
             var userId = GetCurrentUserId();
             var result = await _meetingService.UpdateMeetingAsync(id, userId, dto);
-
             return HandleResult(result);
-
         }
 
         [HttpDelete("{id}")]
@@ -44,9 +38,7 @@ namespace MeetingApp.Api.Controllers
         {
             var userId = GetCurrentUserId();
             var result = await _meetingService.DeleteMeetingAsync(id, userId);
-
             return HandleResult(result);
-
         }
 
         [HttpGet("{id}")]
@@ -54,49 +46,15 @@ namespace MeetingApp.Api.Controllers
         {
             var userId = GetCurrentUserId();
             var result = await _meetingService.GetMeetingByIdAsync(id, userId);
-
             return HandleResult(result);
-
         }
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] MeetingFilterDto filter)
         {
             var userId = GetCurrentUserId();
-            var result = await _meetingService.GetAllMeetingsAsync(userId);
-
+            var result = await _meetingService.GetFilteredMeetingsAsync(userId, filter);
             return HandleResult(result);
-
-        }
-
-        [HttpGet("upcoming")]
-        public async Task<IActionResult> GetUpcoming()
-        {
-            var userId = GetCurrentUserId();
-            var result = await _meetingService.GetUpcomingMeetingsAsync(userId);
-
-            return HandleResult(result);
-
-        }
-
-        [HttpGet("past")]
-        public async Task<IActionResult> GetPast()
-        {
-            var userId = GetCurrentUserId();
-            var result = await _meetingService.GetPastMeetingsAsync(userId);
-
-            return HandleResult(result);
-
-        }
-
-        [HttpGet("cancelled")]
-        public async Task<IActionResult> GetCancelled()
-        {
-            var userId = GetCurrentUserId();
-            var result = await _meetingService.GetCancelledMeetingsAsync(userId);
-
-            return HandleResult(result);
-
         }
 
         [HttpPatch("{id}/cancel")]
@@ -104,9 +62,7 @@ namespace MeetingApp.Api.Controllers
         {
             var userId = GetCurrentUserId();
             var result = await _meetingService.CancelMeetingAsync(id, userId);
-
             return HandleResult(result);
-
         }
     }
 }

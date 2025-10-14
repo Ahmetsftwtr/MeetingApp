@@ -1,7 +1,7 @@
 import { Component, inject, signal, HostListener } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { IconComponent } from '../../icon/icon.component';
+import { IconComponent } from '../../components/icon/icon.component';
 import { AsyncPipe } from '@angular/common';
 
 @Component({

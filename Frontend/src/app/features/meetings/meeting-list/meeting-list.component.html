@@ -10,29 +10,35 @@
   <div class="tabs">
     <button 
       class="tab" 
-      [class.active]="activeTab() === 'all'"
-      (click)="changeTab('all')">
+      [class.active]="activeTab() === 0"
+      (click)="changeTab(0)">
       Tümü
     </button>
     <button 
       class="tab" 
-      [class.active]="activeTab() === 'upcoming'"
-      (click)="changeTab('upcoming')">
+      [class.active]="activeTab() === 1"
+      (click)="changeTab(1)">
       Yaklaşan
     </button>
     <button 
       class="tab" 
-      [class.active]="activeTab() === 'past'"
-      (click)="changeTab('past')">
+      [class.active]="activeTab() === 2"
+      (click)="changeTab(2)">
       Geçmiş
     </button>
     <button 
       class="tab" 
-      [class.active]="activeTab() === 'cancelled'"
-      (click)="changeTab('cancelled')">
+      [class.active]="activeTab() === 3"
+      (click)="changeTab(3)">
       İptal Edilenler
     </button>
   </div>
+
+  @if (hasLoaded()) {
+    <app-meetings-filter 
+      (filterChange)="onFilterChange($event)"
+      (clearFilters)="onClearFilters()" />
+  }
 
   @if (loading()) {
     <div class="loading-state">
@@ -84,5 +90,10 @@
         </div>
       }
     </div>
+
+    <app-pagination 
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      (pageChange)="changePage($event)" />
   }
 </div>

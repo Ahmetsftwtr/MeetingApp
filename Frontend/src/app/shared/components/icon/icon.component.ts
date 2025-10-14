@@ -10,6 +10,8 @@ export type IconName =
   | 'plus'
   | 'arrow-left'
   | 'arrow-right'
+  | 'arrow-up'
+  | 'arrow-down'
   | 'check'
   | 'close'
   | 'user'

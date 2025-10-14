@@ -1,14 +1,17 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MeetingService } from '../../../core/services/meeting.service';
 import { MeetingDto } from '../../../core/models/meeting/Response/meetingResponse.dto';
 import { Title } from '@angular/platform-browser';
-import { IconComponent } from '../../../shared/icon/icon.component';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { MeetingFilterDto, MeetingStatus } from '../../../core/models/meeting/Request/meetingFilter.dto';
+import { MeetingsFilterComponent, FilterValues } from '../components/meetings-filter/meetings-filter.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-meeting-list',
-  imports: [CommonModule, RouterModule, IconComponent],
+  imports: [CommonModule, RouterModule, IconComponent, MeetingsFilterComponent, PaginationComponent],
   templateUrl: './meeting-list.component.html',
   styleUrl: './meeting-list.component.scss'
 })
@@ -20,7 +23,20 @@ export class MeetingListComponent implements OnInit {
   meetings = signal<MeetingDto[]>([]);
   loading = signal(true);
   errorMessage = signal('');
-  activeTab = signal<'all' | 'upcoming' | 'past' | 'cancelled'>('all');
+  activeTab = signal<MeetingStatus>(MeetingStatus.All);
+  currentPage = signal(1);
+  pageSize = signal(10);
+  totalCount = signal(0);
+  totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize()));
+  hasLoaded = signal(false);
+  
+  searchTerm = signal('');
+  startDateFrom = signal('');
+  startDateTo = signal('');
+  endDateFrom = signal('');
+  endDateTo = signal('');
+  sortBy = signal('StartDate');
+  sortDesc = signal(true);
 
   constructor() {
     this.titleService.setTitle('Toplantılar - Meeting App');
@@ -34,29 +50,71 @@ export class MeetingListComponent implements OnInit {
     this.loading.set(true);
     this.errorMessage.set('');
 
-    const serviceCall = {
-      all: () => this.meetingService.getAll(),
-      upcoming: () => this.meetingService.getUpcoming(),
-      past: () => this.meetingService.getPast(),
-      cancelled: () => this.meetingService.getCancelled()
-    }[this.activeTab()];
+    const filter: MeetingFilterDto = {
+      status: this.activeTab(),
+      pageNumber: this.currentPage(),
+      pageSize: this.pageSize(),
+      orderBy: this.sortBy(),
+      isDescending: this.sortDesc(),
+      searchTerm: this.searchTerm() || undefined,
+      startDateFrom: this.startDateFrom() || undefined,
+      startDateTo: this.startDateTo() || undefined,
+      endDateFrom: this.endDateFrom() || undefined,
+      endDateTo: this.endDateTo() || undefined
+    };
 
-    serviceCall().subscribe({
+    this.meetingService.getFiltered(filter).subscribe({
       next: (response) => {
         if (response.isSuccess && response.data) {
-          this.meetings.set(response.data.meetings || response.data);
+          this.meetings.set(response.data.items);
+          this.totalCount.set(response.data.totalCount);
+          this.currentPage.set(response.data.pageNumber);
         }
         this.loading.set(false);
+        this.hasLoaded.set(true);
       },
       error: (error) => {
         this.errorMessage.set(error.message || 'Toplantılar yüklenemedi');
         this.loading.set(false);
+        this.hasLoaded.set(true);
       }
     });
   }
 
-  changeTab(tab: 'all' | 'upcoming' | 'past' | 'cancelled') {
-    this.activeTab.set(tab);
+  onFilterChange(filters: FilterValues) {
+    this.searchTerm.set(filters.searchTerm);
+    this.startDateFrom.set(filters.startDateFrom);
+    this.startDateTo.set(filters.startDateTo);
+    this.endDateFrom.set(filters.endDateFrom);
+    this.endDateTo.set(filters.endDateTo);
+    this.sortBy.set(filters.sortBy);
+    this.sortDesc.set(filters.sortDesc);
+    this.pageSize.set(filters.pageSize);
+    this.currentPage.set(1);
+    this.loadMeetings();
+  }
+
+  onClearFilters() {
+    this.searchTerm.set('');
+    this.startDateFrom.set('');
+    this.startDateTo.set('');
+    this.endDateFrom.set('');
+    this.endDateTo.set('');
+    this.sortBy.set('StartDate');
+    this.sortDesc.set(true);
+    this.pageSize.set(10);
+    this.currentPage.set(1);
+    this.loadMeetings();
+  }
+
+  changeTab(status: MeetingStatus) {
+    this.activeTab.set(status);
+    this.currentPage.set(1);
+    this.loadMeetings();
+  }
+
+  changePage(page: number) {
+    this.currentPage.set(page);
     this.loadMeetings();
   }
 

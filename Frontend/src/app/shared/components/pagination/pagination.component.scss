@@ -1,0 +1,77 @@
+@use '../../../../assets/scss/abstracts/variables' as *;
+@use '../../../../assets/scss/abstracts/mixins' as *;
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: $spacing-4;
+  padding: $spacing-3 0;
+
+  @include mobile {
+    gap: 4px;
+    padding: $spacing-2 0;
+  }
+}
+
+.pagination-btn {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white;
+  border: 1px solid $gray-300;
+  border-radius: $border-radius;
+  color: $gray-700;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all $transition;
+  padding: 0 12px;
+
+  &:hover:not(:disabled) {
+    background: $gray-50;
+    border-color: $primary;
+    color: $primary;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &.page-number {
+    min-width: 40px;
+    padding: 0;
+
+    &.active {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+      font-weight: $font-weight-bold;
+
+      &:hover {
+        background: $primary-dark;
+        border-color: $primary-dark;
+        color: $white;
+      }
+    }
+  }
+
+  @include mobile {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+
+    &.page-number {
+      min-width: 36px;
+    }
+  }
+}
+
+.pagination-dots {
+  color: $gray-500;
+  padding: 0 4px;
+  user-select: none;
+}

@@ -32,9 +32,17 @@
 
 @mixin hover-lift {
   transition: transform $transition, box-shadow $transition;
+  -webkit-transition: transform $transition, box-shadow $transition;
+  -moz-transition: transform $transition, box-shadow $transition;
+  -ms-transition: transform $transition, box-shadow $transition;
+  -o-transition: transform $transition, box-shadow $transition;
 
   &:hover {
     transform: translateY(-2px);
+    -webkit-transform: translateY(-2px);
+    -moz-transform: translateY(-2px);
+    -ms-transform: translateY(-2px);
+    -o-transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 }

@@ -6,7 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { SearchCountryField, CountryISO } from 'ngx-intl-tel-input';
 import { Title } from '@angular/platform-browser';
-import { IconComponent } from '../../../shared/icon/icon.component';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-register',
