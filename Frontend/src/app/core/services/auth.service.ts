@@ -92,6 +92,6 @@ export class AuthService {
 
   getProfileImageUrl(path?: string): string {
     if (!path) return 'assets/images/default-avatar.png';
-    return `${environment.apiUrl}/${path}`;
+    return `${environment.fileUrl}/${path}`;
   }
 }
