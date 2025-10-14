@@ -176,6 +176,7 @@ namespace MeetingApp.Business.Services.Meeting
                 }
 
                 _unitOfWork.Meetings.Remove(meeting);
+                _unitOfWork.MeetingDocuments.RemoveRange(meeting.Documents);
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Meeting deleted successfully: {MeetingId} - {Title} (Trigger will log to DeletedMeetingsLog)", meetingId, meeting.Title);

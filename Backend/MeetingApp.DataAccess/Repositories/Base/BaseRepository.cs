@@ -22,5 +22,6 @@ namespace MeetingApp.DataAccess.Repositories.Base
         public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
         public void Update(T entity) => _dbSet.Update(entity);
         public void Remove(T entity) => _dbSet.Remove(entity);
+        public void RemoveRange(IEnumerable<T> entities) => _dbSet.RemoveRange(entities);
     }
 }
