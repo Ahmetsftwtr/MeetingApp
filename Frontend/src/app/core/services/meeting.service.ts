@@ -8,7 +8,7 @@ import { MeetingDto } from '../models/meeting/Response/meetingResponse.dto';
 import { CreateMeetingRequestDto } from '../models/meeting/Request/createMeetingRequest.dto';
 import { MeetingListResponseDto } from '../models/meeting/Response/meetingListResponse.dto';
 
-@Injectable({
+@Injectable({ 
   providedIn: 'root'
 })
 export class MeetingService {

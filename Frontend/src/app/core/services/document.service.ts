@@ -6,7 +6,7 @@ import { MeetingDocumentDto } from '../models/meeting/Response/meetingResponse.d
 import { ApiResponse } from '../models/base/api-response.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root' 
 })
 export class DocumentService {
   private http = inject(HttpClient);
