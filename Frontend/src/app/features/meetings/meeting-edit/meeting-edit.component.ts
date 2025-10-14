@@ -102,8 +102,8 @@ export class MeetingEditComponent implements OnInit {
     const request: UpdateMeetingRequestDto = {
       title: formValue.title,
       description: formValue.description || undefined,
-      startDate: new Date(formValue.startDate).toISOString(),
-      endDate: new Date(formValue.endDate).toISOString()
+      startDate: formValue.startDate + ':00',
+      endDate: formValue.endDate + ':00'
     };
 
     this.meetingService.update(this.meetingId, request).subscribe({
